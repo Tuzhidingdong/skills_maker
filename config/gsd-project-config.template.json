@@ -1,0 +1,32 @@
+{
+  "mode": "interactive",
+  "granularity": "standard",
+  "runtime": "antigravity",
+  "model_profile": "inherit",
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": true,
+    "auto_advance": false,
+    "node_repair": true,
+    "node_repair_budget": 1,
+    "use_worktrees": false,
+    "cross_ai_execution": false
+  },
+  "hooks": {
+    "context_warnings": true,
+    "workflow_guard": true
+  },
+  "parallelization": {
+    "enabled": false,
+    "plan_level": false,
+    "task_level": false,
+    "skip_checkpoints": false,
+    "max_concurrent_agents": 1
+  },
+  "gates": {
+    "execute_next_plan": true,
+    "confirm_transition": true,
+    "confirm_milestone_scope": true
+  }
+}
