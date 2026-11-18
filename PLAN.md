@@ -21,6 +21,9 @@ Operate a repeatable, low-drift engineering process for reusable AI Skills: requ
 - [x] Pin GSD Core source to a reviewed upstream release.
 - [x] Define main and secondary Agent role contracts.
 - [x] Add a conservative GSD project configuration template.
+- [x] Define dynamic Worker A/B routing restricted to live-verified OpenCode GO free/included models.
+- [x] Remove duplicate QA scope: Worker B runs independent acceptance tests; Antigravity owns architecture and final acceptance.
+- [x] Add a user-authored task-plan workflow that preserves the original plan and stores progress separately.
 - [ ] Clone repository and initialize the GSD submodule on the workstation.
 - [ ] Install GSD Core locally for Antigravity.
 - [ ] Initialize the GSD project and apply the configuration template.
@@ -52,7 +55,13 @@ Operate a repeatable, low-drift engineering process for reusable AI Skills: requ
 
 ## Active focus
 
-Complete M0 local setup and validate runtime integration. Do not start M1 for a specific Skill until the user supplies that Skill's objective.
+Complete M0 local setup and validate runtime integration. The normal M1 input is a user-authored `work_items/<task-id>/PLAN.md` with acceptance criteria. Do not make the user approve an AI-generated duplicate of an already complete plan.
+
+## User task-plan convention
+
+- Authoritative task specification: `work_items/<task-id>/PLAN.md`.
+- Execution progress and evidence: sibling `work_items/<task-id>/STATUS.md` plus GSD `.planning/STATE.md`.
+- Preserve the user's original PLAN.md. Material changes require the user's decision.
 
 ## Update protocol
 
