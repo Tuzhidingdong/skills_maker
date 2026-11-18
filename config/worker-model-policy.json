@@ -1,0 +1,63 @@
+{
+  "policy_version": "1.0",
+  "provider": "OpenCode GO",
+  "catalogue_source": "existing OpenCode GO Worker Manager via opencode_go_inspect",
+  "selection": {
+    "default_cost_tier": "verified_free_or_subscription_included",
+    "allow_paid_by_default": false,
+    "require_explicit_authorization_for_paid": true,
+    "free_model_requires_live_catalogue_evidence": true,
+    "never_infer_free_from_model_name": true,
+    "never_fallback_to_paid": true,
+    "refresh_catalogue_before_each_dispatch": true
+  },
+  "roles": {
+    "worker_a": {
+      "purpose": "Skill implementation",
+      "preferred_capabilities": [
+        "code_generation",
+        "repository_editing",
+        "tool_use",
+        "debugging",
+        "instruction_following"
+      ],
+      "selection": "highest_capability_model_among_verified_free_models"
+    },
+    "worker_b": {
+      "purpose": "Independent acceptance QA",
+      "preferred_capabilities": [
+        "reasoning",
+        "test_design",
+        "edge_case_analysis",
+        "code_reading",
+        "failure_analysis"
+      ],
+      "selection": "different_verified_free_model_from_worker_a_when_available"
+    }
+  },
+  "fallback": {
+    "no_verified_free_models": "stop_before_worker_dispatch_and_report",
+    "only_one_verified_free_model": "use_same_model_in_a_separate_fresh_session_and_disclose_reduced_model_diversity",
+    "free_status_unclear": "treat_as_not_free_and_do_not_dispatch"
+  },
+  "authorization": {
+    "user_task_plan_execution_authorizes_in_scope_free_workers": true,
+    "separate_approval_for_verified_free_model": false,
+    "paid_model_requires_explicit_approval": true,
+    "announce_worker_role_model_cost_status_project_and_scope": true
+  },
+  "execution": {
+    "worker_manager": "existing_opencode_go_worker_manager",
+    "workdir": "shared",
+    "permission": "guarded",
+    "model_selection_strategy": "adaptive",
+    "parallel_worker_dispatch": false,
+    "worker_a_and_worker_b_must_use_fresh_independent_sessions": true
+  },
+  "reporting": {
+    "record_model_id": true,
+    "record_free_status_evidence": true,
+    "record_actual_token_usage_when_available": true,
+    "never_estimate_usage": true
+  }
+}

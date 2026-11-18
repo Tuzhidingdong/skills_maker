@@ -1,62 +1,57 @@
 ---
 name: skill-engineering
-description: Use when creating, revising, debugging, evaluating, packaging, or releasing a reusable AI agent Skill. Enforces a plan-first, worker-separated, evidence-based lifecycle managed by GSD Core.
+description: Use when the user supplies or references a development plan and acceptance criteria for creating, revising, debugging, evaluating, packaging, or releasing a reusable AI Skill. Antigravity remains the architect/orchestrator; OpenCode GO workers use verified-free models by default.
 ---
 
 # Skill Engineering Workflow
 
-## 1. Anchor the task
+## 1. Start from the user's plan
 
-Read, in order:
-- `AGENTS.md`
-- root `PLAN.md`
-- `PROJECT_CHARTER.md`
-- current GSD `STATE.md`, `ROADMAP.md`, and the relevant phase plan.
+The normal input is a user-authored plan file at `work_items/<task-id>/PLAN.md`. Read it together with `AGENTS.md`, root `PLAN.md`, `PROJECT_CHARTER.md`, current GSD state and the task `STATUS.md`.
 
-Do not rely on chat history as the only source of project state.
+The user plan is authoritative for objective, constraints, scope and acceptance criteria. Do not ask the user to approve a duplicate AI-generated plan. Do not silently change acceptance criteria.
 
-## 2. Define the Skill contract
+If the user provides the plan in chat, capture it faithfully into a task plan file and preserve its requirements. If the plan has material contradictions or missing decisions that block safe implementation, ask only about those blockers.
 
-Before implementation, record:
-- user problem and intended user;
-- positive and negative trigger examples;
-- responsibilities and explicit non-goals;
-- inputs, outputs and required artifacts;
-- tools, permissions and side-effect boundaries;
-- failure handling and escalation;
-- compatibility target(s);
-- observable acceptance and regression tests.
+## 2. Antigravity architects and orchestrates
 
-Ask the user to approve the plan when scope, tool permissions or architecture are not already explicit.
+Antigravity remains actively responsible for:
+- understanding the user's objective and acceptance standards;
+- architecture, task decomposition, dependencies and implementation approach;
+- defining exact Worker A file scopes;
+- monitoring progress, risks and the circuit breaker;
+- integration and final acceptance.
 
-## 3. Plan with GSD
+Translate the user's task plan into GSD phases and task status, not a replacement specification. Keep the user plan unchanged. Record progress in `STATUS.md`, `.planning/STATE.md` and GSD phase summaries.
 
-Use GSD's project, discussion and planning workflows to create small, verifiable phases. Keep root `PLAN.md` as the global milestone anchor and GSD phase files as detailed execution records.
+## 3. Route Worker A to a verified-free model
 
-Do not start implementation until the active phase has explicit acceptance criteria and an exact file scope.
+Before worker dispatch, call `opencode_go_inspect` and read the current OpenCode GO model catalogue. Select the strongest model that the Manager explicitly marks as free / included at no additional charge. Never hard-code model IDs or infer free status from names.
 
-## 4. Implement through Worker A
+For tasks the user has instructed the system to execute, a verified-free Worker A may be started without asking for another authorization. Announce the role, exact model, free-status evidence, project root and scope. If no free model can be verified, stop rather than using a paid model.
 
-Prepare one compact task packet. Inspect the existing OpenCode GO Worker Manager, show the user the selected role, model, project root, workdir and task scope, and wait for explicit approval before starting Worker A.
+Worker A implements one bounded packet and returns a concise evidence-based result.
 
-Worker A edits only the authorized files. After each atomic subtask, root `PLAN.md` is updated before another subtask begins.
+## 4. Apply the circuit breaker
 
-## 5. Apply the circuit breaker
+The second consecutive occurrence of the same error, failed test or failed command ends the task immediately. No third blind attempt. Preserve the current state and report the root-cause hypothesis and blocker.
 
-The second consecutive occurrence of the same error, failed test or failed command ends the task immediately. Do not attempt a third fix. Preserve the state and report the root-cause hypothesis and blocker.
+## 5. Use Worker B only for independent QA
 
-## 6. Evaluate independently
+Worker B is useful when the change has meaningful behavior, trigger, permission, failure-mode or regression risk. It runs in a new session, preferably with a different verified-free model, and is read-only.
 
-Start Worker B in a fresh session. Worker B inspects the actual files and runs authorized behavioral and regression tests. Worker B is read-only. A report is evidence, not permission for Worker B to patch code.
+Worker B runs the user's key acceptance tests plus selected negative/edge and relevant regression cases. It does not redo architecture planning or duplicate Antigravity's final review. Antigravity interprets the evidence and decides acceptance.
 
-## 7. Remediate and re-evaluate
+For trivial documentation-only edits with no behavior impact, Antigravity may skip Worker B and state why.
 
-The Main Agent converts blocking findings into a new bounded task. Worker A performs the patch after approval; Worker B rechecks it independently. Do not loop indefinitely.
+## 6. Integrate and accept
 
-## 8. Checkpoint and hand off
+Antigravity checks the changed-file diff against the user's approved scope, reviews Worker A's targeted test evidence and Worker B's independent QA report, assesses architectural consistency, and determines whether every user acceptance criterion is met.
 
-At a completed major phase, update root `PLAN.md`, GSD `STATE.md` and the phase summary. Record files, checks, limitations and next step. Start the next phase in a clean session with only the required state and project materials.
+Do not claim success for criteria that were not tested.
 
-## 9. Release
+## 7. Checkpoint and release
 
-Do not publish or replace a stable Skill version until acceptance criteria pass and the user explicitly approves release.
+At each major phase boundary, update `STATUS.md`, GSD `STATE.md` and the phase summary. Preserve the original user plan. Provide a short clean-context handoff and start the next phase in a fresh session when appropriate.
+
+Do not publish or replace a stable Skill version without explicit user approval.
